@@ -1,0 +1,25 @@
+# This is a Databricks asset bundle definition for ucgrants.
+# The Databricks extension requires databricks.yml configuration file.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+
+bundle:
+  name: ucgrants
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://e2-demo-field-eng.cloud.databricks.com
+
+  adbdev:
+    mode: development
+    default: false
+    workspace:
+      host: https://adb-3579256620842475.15.azuredatabricks.net
+
+  ## Optionally, there could be 'staging' or 'prod' targets here.
+  #
+  # prod:
+  #   workspace:
+  #     host: https://e2-demo-field-eng.cloud.databricks.com
