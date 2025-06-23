@@ -38,10 +38,9 @@ def main() -> None:
     parser.add_argument("--output-catalog", required=True, help="Output catalog name")
     parser.add_argument("--output-schema", required=True, help="Output schema name")
     parser.add_argument(
-        "--audit-catalog",
-        action="append",
+        "--audit-catalogs",
         required=True,
-        help="Audit catalog names (can be specified multiple times)",
+        help="Comma-separated list of audit catalog names",
     )
 
     args = parser.parse_args()
@@ -49,7 +48,7 @@ def main() -> None:
     output_catalog = args.output_catalog
     output_schema = args.output_schema
     audit_schema = f"{output_catalog}.{output_schema}"
-    catalog_names = args.audit_catalog
+    catalog_names = args.audit_catalogs.split(",")
 
     logger.info(f"audit table schema: {output_catalog}.{output_schema}")
     logger.info(f"audit catalog names: {catalog_names}")
