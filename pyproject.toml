@@ -22,7 +22,7 @@ dev = [
 python_version = "3.11"
 strict = true
 warn_unreachable = true
-files = ["ucgrants", "tests"]
+files = ["ucgrants", "tests", "refresh_tables.py"]
 
 [tool.ruff.lint]
 select = ["F", "E", "W", "I", "UP", "RUF"]

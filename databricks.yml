@@ -5,6 +5,58 @@
 bundle:
   name: ucgrants
 
+variables:
+  output_catalog:
+    description: "The catalog to write the audit tables to"
+    default: "main"
+  output_schema:
+    description: "The schema to write the audit tables to"
+    default: "audit"
+  audit_catalog:
+    description: "The catalog to write the audit tables to"
+    default: "main"
+  dashboard_warehouse:
+    description: "The warehouse to use for the dashboard"
+    lookup:
+      warehouse: "my-serverless-warehouse"
+
+resources:
+  dashboards:
+    unity_catalog_grants:
+      display_name: unity-catalog-grants
+      file_path: dashboards/unity-catalog-grants.lvdash.json
+      warehouse_id: ${var.dashboard_warehouse}
+      embed_credentials: false
+  jobs:
+    ucgrants:
+      name: ucgrants
+      queue:
+        enabled: true
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: refresh-tables
+          spark_python_task:
+            python_file: ./refresh_tables.py
+            parameters:
+              - "--output-catalog"
+              - ${var.output_catalog}
+              - "--output-schema"
+              - ${var.output_schema}
+              - "--audit-catalog"
+              - ${var.audit_catalog}
+          environment_key: refresh-tables
+        - task_key: refresh-dashboards
+          dashboard_task:
+            warehouse_id: ${var.dashboard_warehouse}
+            subscription: {}
+            dashboard_id: ${resources.dashboards.unity_catalog_grants.id}
+          depends_on:
+            - { task_key: refresh-tables }
+      environments:
+        - environment_key: refresh-tables
+          spec:
+            client: "3"
+
 targets:
   dev:
     mode: development
@@ -17,9 +69,7 @@ targets:
     default: false
     workspace:
       host: https://adb-3579256620842475.15.azuredatabricks.net
-
-  ## Optionally, there could be 'staging' or 'prod' targets here.
-  #
-  # prod:
-  #   workspace:
-  #     host: https://e2-demo-field-eng.cloud.databricks.com
+    variables:
+      output_catalog: main
+      output_schema: audit
+      audit_catalog: main
